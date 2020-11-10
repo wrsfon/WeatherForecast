@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>Weather Forecast</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Weather Forecast</h2>
+        <p>This table showed the weather forecasts in selected region of Thailand on selected date.</p>
+
+        <br>
+        <div th:with="region=${region},date=${date},minDate=${minDate},maxDate=${maxDate}">
+            <form action="/weather-forecast">
+                <label for="region">Choose a Region:</label>
+                <select id="region" name="region">
+                    <option value="C" th:selected="${region} == 'C' ? true : false">Central</option>
+                    <option value="N" th:selected="${region} == 'N' ? true : false">Northern</option>
+                    <option value="NE" th:selected="${region} == 'NE' ? true : false">Northeastern</option>
+                    <option value="E" th:selected="${region} == 'E' ? true : false">Eastern</option>
+                    <option value="S" th:selected="${region} == 'S' ? true : false">Southern</option>
+                    <option value="W" th:selected="${region} == 'W' ? true : false">Western</option>
+                </select>
+
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" th:value=${date} th:min=${minDate} th:max=${maxDate}>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Province</th>
+                    <th style="text-align:center">Weather Condition</th>
+                    <th style="text-align:center">Temperature (°C)</th>
+                    <th style="text-align:center">Relative Humidity (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="weatherForecast : ${weatherForecasts}">
+                    <p th:each="location : ${weatherForecast.getLocation()}">
+                        <td th:text="${location.getProvince()}">Province</td>
+                    </td>
+                    <p th:each="forecast : ${weatherForecast.getForecasts()}">
+                        <td style="text-align:center" th:text="${forecast.getData().getCond()}">Weather Condition</td>
+                        <td style="text-align:center" th:text="${forecast.getData().getTc()}">Temperature</td>
+                        <td style="text-align:center" th:text="${forecast.getData().getRh()}">Relative Humidity</td>
+                    </p>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
