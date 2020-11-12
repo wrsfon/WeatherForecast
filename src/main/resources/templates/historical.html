@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Weather Forecast</title>
-    <meta charset="utf-8">
+    <title>Historical Weather Forecast</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h2>Weather Forecast</h2>
-        <p>This table showed the weather forecasts in selected region of Thailand on selected date.</p>
-
+    <div class="container" th:with="province=${province}">
+        <h2>Historical Weather Forecast</h2>
+        <p>This table showed the weather forecasts in <span th:text="${province}"/> Province of Thailand in past 30 days.</p>
         <br>
-        <div class="row" th:with="region=${region},date=${date},minDate=${minDate},maxDate=${maxDate}">
+
+        <div th:with="region=${region}">
             <div class="col-sm-6">
-                <form action="/weather-forecast">
+                <form action="/weather-forecast/historical">
                     <label for="region">Choose a Region:</label>
                     <select id="region" name="region">
                         <option value="C" th:selected="${region} == 'C' ? true : false">Central</option>
@@ -26,40 +26,32 @@
                         <option value="S" th:selected="${region} == 'S' ? true : false">Southern</option>
                         <option value="W" th:selected="${region} == 'W' ? true : false">Western</option>
                     </select>
-
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="date" th:value=${date} th:min=${minDate} th:max=${maxDate}>
                     <input type="submit" value="Submit">
                 </form>
             </div>
-
             <div class="col-sm-6">
                 <p style="text-align:right">
-                    <a href="/weather-forecast/historical">Historical Forecast</a>
+                    <a href="/weather-forecast">Go Back</a>
                 </p>
             </div>
         </div>
 
         <table class="table">
             <thead>
-                <tr>
-                    <th>Province</th>
-                    <th style="text-align:center">Weather Condition</th>
-                    <th style="text-align:center">Temperature (°C)</th>
-                    <th style="text-align:center">Relative Humidity (%)</th>
-                </tr>
+            <tr>
+                <th style="text-align:center">Date</th>
+                <th style="text-align:center">Weather Condition</th>
+                <th style="text-align:center">Min Temperature (°C)</th>
+                <th style="text-align:center">Max Temperature (°C)</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="weatherForecast : ${weatherForecasts}">
-                    <p th:each="location : ${weatherForecast.getLocation()}">
-                        <td th:text="${location.getProvince()}">Province</td>
-                    </p>
-                    <p th:each="forecast : ${weatherForecast.getForecasts()}">
-                        <td style="text-align:center" th:text="${forecast.getData().getCond()}">Weather Condition</td>
-                        <td style="text-align:center" th:text="${forecast.getData().getTc()}">Temperature</td>
-                        <td style="text-align:center" th:text="${forecast.getData().getRh()}">Relative Humidity</td>
-                    </p>
-                </tr>
+            <tr th:each="date,i : ${historicalForecast30Days.getValidTimeLocal()}">
+                <td style="text-align:center"  th:text="${date}">Date</td>
+                <td style="text-align:center"  th:text="${historicalForecast30Days.getWxPhraseLongDay()[i.index]}">Weather Condition</td>
+                <td style="text-align:center"  th:text="${historicalForecast30Days.getTemperatureMin()[i.index]}">Min Temperature (°C)</td>
+                <td style="text-align:center"  th:text="${historicalForecast30Days.getTemperatureMax()[i.index]}">Max Temperature (°C)</td>
+            </tr>
             </tbody>
         </table>
     </div>

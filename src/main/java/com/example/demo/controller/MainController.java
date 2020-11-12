@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.HistoricalForecast30Days;
 import com.example.demo.model.WeatherForecastList;
 import com.example.demo.service.WeatherForecastService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,15 @@ public class MainController {
         model.addAttribute("minDate", today);
         model.addAttribute("maxDate", dateToString(plusNineDays(today)));
         return "home";
+    }
+
+    @RequestMapping(value = "/weather-forecast/historical", method = RequestMethod.GET)
+    public String historicalForecast(@RequestParam(defaultValue = "C") String region, ModelMap model) {
+        HistoricalForecast30Days historicalForecast30Days = weatherForecastService.getHistoricalForecast30Days(region);
+
+        model.addAttribute("historicalForecast30Days", historicalForecast30Days);
+        model.addAttribute("province", weatherForecastService.getProvinceByRegion(region));
+        model.addAttribute("region", region);
+        return "historical";
     }
 }
